@@ -64,34 +64,33 @@ test02RemovingCustomerShouldNotTakeMoreThan100Milliseconds
 !IdiomTest methodsFor: 'testing' stamp: 'C.A. 4/20/2017 21:57:20'!
 test03CanNotAddACustomerWithEmptyName 
 
-	| customerBook anArray|
-
-	customerBook := CustomerBook new.
+	| customerBook assertionsToCheck |
 	
-	anArray:= Array new:2.
-	anArray at:1 put: [ :anError | anError messageText = CustomerBook customerCanNotBeEmptyErrorMessage ] .
-	anArray at:2 put: [ :anError | customerBook isEmpty ] .
 
-	self assert: (self when:[ customerBook addCustomerNamed: ''.]
-		on: Error 
-		check: anArray)! !
+	customerBook _ CustomerBook new.
+	assertionsToCheck _ [:anError | 
+								self assert: anError messageText = CustomerBook customerCanNotBeEmptyErrorMessage.
+								self assert: customerBook isEmpty].
 
-!IdiomTest methodsFor: 'testing' stamp: 'HernanWilkinson 5/16/2012 16:50'!
+	self should: [customerBook addCustomerNamed:''] raise: Error withExceptionDo: assertionsToCheck.! !
+
+
+!IdiomTest methodsFor: 'testing' stamp: 'C.A. 4/23/2017 15:01:11'!
 test04CanNotRemoveAndInvalidCustomer
 	
-	| customerBook johnLennon |
-			
-	customerBook := CustomerBook new.
-	johnLennon := 'John Lennon'.
-	customerBook addCustomerNamed: johnLennon.
+	| customerBook johnLennon assertionsToCheck |
 	
-	[ customerBook removeCustomerNamed: 'Paul McCartney'.
-	self fail ]
-		on: NotFound 
-		do: [ :anError | 
-			self assert: customerBook numberOfCustomers = 1.
-			self assert: (customerBook includesCustomerNamed: johnLennon) ]
-! !
+
+	customerBook _ CustomerBook new.
+	johnLennon _ 'John Lennon'.
+	customerBook addCustomerNamed: johnLennon. 
+	
+	assertionsToCheck _ [:anError | 
+								self assert: customerBook numberOfCustomers = 1.
+								self assert: (customerBook includesCustomerNamed: johnLennon)].
+
+	self should: [customerBook removeCustomerNamed: 'Paul McCartney'] raise: NotFound withExceptionDo: assertionsToCheck.! !
+
 
 !IdiomTest methodsFor: 'testing' stamp: 'C.A. 4/20/2017 22:00:59'!
 when:aClosure on:anErrorType check:conditions
