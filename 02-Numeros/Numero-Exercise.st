@@ -207,10 +207,40 @@ Object subclass: #Numero
 
 	self subclassResponsibility ! !
 
+!Numero methodsFor: 'arithmetic operations' stamp: 'C.A. 4/27/2017 15:36:53'!
+addEntero: anEntero 
+
+	self subclassResponsibility ! !
+
+!Numero methodsFor: 'arithmetic operations' stamp: 'C.A. 4/27/2017 15:38:16'!
+addFraccion: aFraccion 
+
+	self subclassResponsibility ! !
+
+!Numero methodsFor: 'arithmetic operations' stamp: 'C.A. 4/27/2017 15:39:15'!
+divideEnteroBySelf: anEntero 
+
+	self subclassResponsibility ! !
+
+!Numero methodsFor: 'arithmetic operations' stamp: 'C.A. 4/27/2017 15:39:58'!
+divideFraccionBySelf: aFraccion 
+
+	self subclassResponsibility ! !
+
 !Numero methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 22:48'!
 invalidNumberType
 
 	self error: self class invalidNumberTypeErrorDescription! !
+
+!Numero methodsFor: 'arithmetic operations' stamp: 'C.A. 4/27/2017 15:42:35'!
+multiplyEntero: anEntero 
+
+	self subclassResponsibility ! !
+
+!Numero methodsFor: 'arithmetic operations' stamp: 'C.A. 4/27/2017 15:43:14'!
+multiplyFraccion: aFraccion 
+
+	self subclassResponsibility ! !
 
 
 !Numero methodsFor: 'testing' stamp: 'HernanWilkinson 5/7/2016 22:49'!
