@@ -100,10 +100,20 @@ test10GameDoesNotContainMultipleCellsPerBoardPosition
 	
 	self assert: (gameOfLife aliveCells size = 2) ! !
 
+!GOLTest methodsFor: 'Testing' stamp: 'C.A. 5/15/2017 22:21:02'!
+test11CellsOutsideOfBoardBoundsCannotBeRevived
+
+	|gameOfLife |
+	
+	gameOfLife := GameOfLife withLiveCells: { 2@0. 2@1. 2@2.} withSize: 2@2.
+	gameOfLife nextGeneration.
+	
+	self assert: (gameOfLife aliveCells allSatisfy: [:aCellPosition | gameOfLife isValidCellPosition: aCellPosition])! !
+
 
 !classDefinition: #GameOfLife category: #GOL!
 Object subclass: #GameOfLife
-	instanceVariableNames: 'aliveCells boardSize'
+	instanceVariableNames: 'aliveCells boardSize validCellsInBoard'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'GOL'!
@@ -112,16 +122,10 @@ Object subclass: #GameOfLife
 aliveCells
 	^aliveCells! !
 
-!GameOfLife methodsFor: 'private' stamp: 'C.A. 5/14/2017 09:24:14'!
+!GameOfLife methodsFor: 'private' stamp: 'C.A. 5/15/2017 22:26:24'!
 deadCells
 	
-	| deadCells |
-	
-	deadCells _ OrderedCollection new.
-	0 to: boardSize x do: [ :x |
-		0 to: boardSize y do: [ :y |
-			(aliveCells includes: x@y) not ifTrue: [ deadCells add: x@y]]].
-	^deadCells ! !
+	^validCellsInBoard copyWithoutAll: aliveCells.! !
 
 !GameOfLife methodsFor: 'private' stamp: 'HAW 5/11/2017 21:11:17'!
 hasToResurrect: aCell
@@ -137,10 +141,14 @@ hasToSurvive: aCell
 	
 	^numberOfAliveNeighbours = 2 or:  [numberOfAliveNeighbours = 3]! !
 
-!GameOfLife methodsFor: 'private' stamp: 'C.A. 5/14/2017 09:23:28'!
+!GameOfLife methodsFor: 'private' stamp: 'C.A. 5/15/2017 22:21:44'!
 initializeWith: aCollectionOfAliveCells withSize: aSize
 
 	boardSize := aSize.
+	validCellsInBoard  := Set new.
+	0 to: boardSize x do: [ :i |
+		0 to: boardSize y do: [ :j |
+			validCellsInBoard add: i@j.] ].
 	aliveCells := aCollectionOfAliveCells.
 	! !
 
@@ -153,17 +161,25 @@ isDeadAt: aCellPosition
 
 	^(self isAliveAt: aCellPosition) not! !
 
+!GameOfLife methodsFor: 'private' stamp: 'C.A. 5/15/2017 22:00:24'!
+isValidCellPosition: aCell
+	^validCellsInBoard includes: aCell.! !
+
 !GameOfLife methodsFor: 'private' stamp: 'HAW 5/10/2017 10:29:35'!
 numberOfAliveNeighboursOf: aCell
 
 	^(aCell eightNeighbors intersection: aliveCells) size! !
 
 
-!GameOfLife methodsFor: 'accessing' stamp: 'HAW 5/11/2017 21:05:39'!
+!GameOfLife methodsFor: 'accessing' stamp: 'C.A. 5/15/2017 22:19:39'!
 nextGeneration
 	
-	aliveCells := (aliveCells select: [ :aCell | self hasToSurvive: aCell ]) union:
-		(self deadCells select: [ :aDeadCell | self hasToResurrect: aDeadCell ])! !
+	| resurrectedCells |
+	
+	resurrectedCells := (self deadCells select: [ :aDeadCell | self hasToResurrect: aDeadCell ]) intersection: 
+									validCellsInBoard.
+		
+	aliveCells := (aliveCells select: [ :aCell | self hasToSurvive: aCell ]) union: resurrectedCells.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
